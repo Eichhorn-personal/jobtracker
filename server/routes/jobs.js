@@ -12,7 +12,7 @@ const DB_TO_FRONTEND = {
   date: "Date",
   role: "Role",
   company: "Company",
-  source_link: "Source Link",
+  job_board_link: "Job Board Link",
   company_link: "Company Link",
   resume: "Resume",
   cover_letter: "Cover Letter",
@@ -32,9 +32,9 @@ function validateJobFields(body) {
     [str(body["Role"]).length > 200,        "Role must be 200 characters or fewer"],
     [str(body["Company"]).length > 200,     "Company must be 200 characters or fewer"],
     [str(body["Notes"]).length > 5000,   "Notes must be 5000 characters or fewer"],
-    [str(body["Source Link"]).length > 2000,  "Source Link must be 2000 characters or fewer"],
+    [str(body["Job Board Link"]).length > 2000,  "Job Board Link must be 2000 characters or fewer"],
     [str(body["Company Link"]).length > 2000, "Company Link must be 2000 characters or fewer"],
-    [body["Source Link"] && !URL_RE.test(body["Source Link"]),   "Source Link must start with http:// or https://"],
+    [body["Job Board Link"] && !URL_RE.test(body["Job Board Link"]),   "Job Board Link must start with http:// or https://"],
     [body["Company Link"] && !URL_RE.test(body["Company Link"]), "Company Link must start with http:// or https://"],
   ];
   for (const [failed, message] of checks) {
@@ -71,10 +71,10 @@ router.post("/", (req, res) => {
 
   const stmt = db.prepare(`
     INSERT INTO jobs
-      (user_id, date, role, company, source_link, company_link,
+      (user_id, date, role, company, job_board_link, company_link,
        resume, cover_letter, status, comments)
     VALUES
-      (@user_id, @date, @role, @company, @source_link, @company_link,
+      (@user_id, @date, @role, @company, @job_board_link, @company_link,
        @resume, @cover_letter, @status, @comments)
   `);
 
@@ -83,7 +83,7 @@ router.post("/", (req, res) => {
     date: body["Date"] ?? "",
     role: body["Role"] ?? "",
     company: body["Company"] ?? "",
-    source_link: body["Source Link"] ?? "",
+    job_board_link: body["Job Board Link"] ?? "",
     company_link: body["Company Link"] ?? "",
     resume: body["Resume"] ? 1 : 0,
     cover_letter: body["Cover Letter"] ? 1 : 0,
@@ -111,7 +111,7 @@ router.put("/:id", (req, res) => {
       date = @date,
       role = @role,
       company = @company,
-      source_link = @source_link,
+      job_board_link = @job_board_link,
       company_link = @company_link,
       resume = @resume,
       cover_letter = @cover_letter,
@@ -124,7 +124,7 @@ router.put("/:id", (req, res) => {
     date: body["Date"] ?? job.date,
     role: body["Role"] ?? job.role,
     company: body["Company"] ?? job.company,
-    source_link: body["Source Link"] ?? job.source_link,
+    job_board_link: body["Job Board Link"] ?? job.job_board_link,
     company_link: body["Company Link"] ?? job.company_link,
     resume: body["Resume"] !== undefined ? (body["Resume"] ? 1 : 0) : job.resume,
     cover_letter: body["Cover Letter"] !== undefined ? (body["Cover Letter"] ? 1 : 0) : job.cover_letter,

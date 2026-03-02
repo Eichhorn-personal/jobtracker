@@ -72,8 +72,8 @@ describe("POST /api/jobs", () => {
     expect(res.status).toBe(400);
   });
 
-  test("400 — source_link with javascript: scheme rejected", async () => {
-    const res = await addJob(user, { "Source Link": "javascript:alert(1)" });
+  test("400 — job board link with javascript: scheme rejected", async () => {
+    const res = await addJob(user, { "Job Board Link": "javascript:alert(1)" });
     expect(res.status).toBe(400);
   });
 
@@ -82,14 +82,14 @@ describe("POST /api/jobs", () => {
     expect(res.status).toBe(400);
   });
 
-  test("201 — valid https source_link is accepted", async () => {
-    const res = await addJob(user, { "Source Link": "https://jobs.example.com/123" });
+  test("201 — valid https job board link is accepted", async () => {
+    const res = await addJob(user, { "Job Board Link": "https://jobs.example.com/123" });
     expect(res.status).toBe(201);
-    expect(res.body["Source Link"]).toBe("https://jobs.example.com/123");
+    expect(res.body["Job Board Link"]).toBe("https://jobs.example.com/123");
   });
 
-  test("201 — empty source_link is accepted", async () => {
-    const res = await addJob(user, { "Source Link": "" });
+  test("201 — empty job board link is accepted", async () => {
+    const res = await addJob(user, { "Job Board Link": "" });
     expect(res.status).toBe(201);
   });
 
@@ -143,7 +143,7 @@ describe("PUT /api/jobs/:id", () => {
     const res = await request(app)
       .put(`/api/jobs/${created.id}`)
       .set(authHeader(user))
-      .send({ "Source Link": "javascript:evil()" });
+      .send({ "Job Board Link": "javascript:evil()" });
     expect(res.status).toBe(400);
   });
 

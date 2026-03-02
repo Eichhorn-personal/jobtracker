@@ -50,7 +50,7 @@ function createSampleJob(userId) {
   const today = new Date();
   const date = `${String(today.getMonth() + 1).padStart(2, "0")}/${String(today.getDate()).padStart(2, "0")}/${today.getFullYear()}`;
   db.prepare(`
-    INSERT INTO jobs (user_id, date, role, company, source_link, company_link,
+    INSERT INTO jobs (user_id, date, role, company, job_board_link, company_link,
                       resume, cover_letter, status, comments)
     VALUES (?, ?, ?, ?, ?, '', 0, 0, 'Applied', '')
   `).run(userId, date, "<sample role>", "<sample company>", "<paste job board link here>");

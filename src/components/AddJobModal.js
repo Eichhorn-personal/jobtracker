@@ -12,7 +12,7 @@ const emptyForm = () => ({
   Date: today(),
   Role: "",
   Company: "",
-  "Source Link": "",
+  "Job Board Link": "",
   "Company Link": "",
   Resume: false,
   "Cover Letter": false,
@@ -61,7 +61,7 @@ export default function AddJobModal({ show, onHide, onAdd, onSave, initialData, 
   };
 
   const handleScrape = async () => {
-    const url = form["Source Link"];
+    const url = form["Job Board Link"];
     if (!url) return;
     setScraping(true);
     setScrapeNote(null);
@@ -141,6 +141,43 @@ export default function AddJobModal({ show, onHide, onAdd, onSave, initialData, 
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
           <Row className="mb-3">
+            <Col sm={12}>
+              <Form.Group>
+                <Form.Label>Job Board Link</Form.Label>
+                <InputGroup>
+                  <Button
+                    variant="outline-secondary"
+                    onClick={handleScrape}
+                    disabled={!form["Job Board Link"] || scraping}
+                    title="Auto-detect role and company from this URL"
+                    aria-label="Auto-detect role and company"
+                    style={{ zIndex: 0 }}
+                  >
+                    {scraping
+                      ? <Spinner animation="border" size="sm" />
+                      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    }
+                  </Button>
+                  <Form.Control
+                    type="url"
+                    placeholder="https://"
+                    value={form["Job Board Link"]}
+                    onChange={e => { set("Job Board Link", e.target.value); setScrapeNote(null); }}
+                    onPaste={handleUrlPaste("Job Board Link")}
+                    autoFocus={!isEditing}
+                  />
+                </InputGroup>
+                {scrapeNote === "ok" && (
+                  <div className="text-success small mt-1">✓ Role and company detected</div>
+                )}
+                {scrapeNote === "empty" && (
+                  <div className="text-muted small mt-1">Could not detect job details — please fill in manually</div>
+                )}
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
             <Col sm={4}>
               <Form.Group>
                 <Form.Label>Date</Form.Label>
@@ -189,40 +226,6 @@ export default function AddJobModal({ show, onHide, onAdd, onSave, initialData, 
                   <Form.Control.Feedback type="invalid" id="date-error" style={{ display: "block" }}>
                     Enter a date like 2/3, 2/3/25, or 02/03/2025
                   </Form.Control.Feedback>
-                )}
-              </Form.Group>
-            </Col>
-            <Col sm={8}>
-              <Form.Group>
-                <Form.Label>Source Link</Form.Label>
-                <InputGroup>
-                  <Button
-                    variant="outline-secondary"
-                    onClick={handleScrape}
-                    disabled={!form["Source Link"] || scraping}
-                    title="Auto-detect role and company from this URL"
-                    aria-label="Auto-detect role and company"
-                    style={{ zIndex: 0 }}
-                  >
-                    {scraping
-                      ? <Spinner animation="border" size="sm" />
-                      : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    }
-                  </Button>
-                  <Form.Control
-                    type="url"
-                    placeholder="https://"
-                    value={form["Source Link"]}
-                    onChange={e => { set("Source Link", e.target.value); setScrapeNote(null); }}
-                    onPaste={handleUrlPaste("Source Link")}
-                    autoFocus={!isEditing}
-                  />
-                </InputGroup>
-                {scrapeNote === "ok" && (
-                  <div className="text-success small mt-1">✓ Role and company detected</div>
-                )}
-                {scrapeNote === "empty" && (
-                  <div className="text-muted small mt-1">Could not detect job details — please fill in manually</div>
                 )}
               </Form.Group>
             </Col>

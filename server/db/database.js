@@ -26,13 +26,13 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS jobs (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    date         TEXT,
-    role         TEXT,
-    company      TEXT,
-    source_link  TEXT,
-    company_link TEXT,
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    date           TEXT,
+    role           TEXT,
+    company        TEXT,
+    job_board_link TEXT,
+    company_link   TEXT,
     resume       INTEGER NOT NULL DEFAULT 0,
     cover_letter INTEGER NOT NULL DEFAULT 0,
     status       TEXT NOT NULL DEFAULT 'Applied',
@@ -78,6 +78,12 @@ if (!userCols.includes("display_name")) {
 }
 if (!userCols.includes("photo")) {
   db.exec("ALTER TABLE users ADD COLUMN photo TEXT");
+}
+
+// Migration: rename source_link to job_board_link
+const jobCols = db.pragma("table_info(jobs)").map((c) => c.name);
+if (jobCols.includes("source_link")) {
+  db.exec("ALTER TABLE jobs RENAME COLUMN source_link TO job_board_link");
 }
 
 // Migration: add color column to dropdown_options

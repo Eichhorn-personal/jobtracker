@@ -110,7 +110,7 @@ describe("AddJobModal — form submission", () => {
     const onAdd = jest.fn().mockResolvedValue(undefined);
     renderModal({ onAdd });
     // Modal renders in a portal; use document to reach its inputs.
-    // Date is pre-filled (readonly), Source Link is type="url" — so
+    // Date is pre-filled (readonly), Job Board Link is type="url" — so
     // input[type='text']:not([readonly]) starts at Role then Company.
     // eslint-disable-next-line testing-library/no-node-access
     const editableText = document.querySelectorAll("input[type='text']:not([readonly])");
