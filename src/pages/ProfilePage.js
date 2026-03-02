@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Form } from "react-bootstrap";
+import { Container, Form, InputGroup, Button } from "react-bootstrap";
 import { useApi } from "../hooks/useApi";
 import { useAuth } from "../context/AuthContext";
 import "../DataTable.css";
@@ -11,6 +11,7 @@ export default function ProfilePage() {
   const navigate = useNavigate();
 
   const [displayName, setDisplayName] = useState(user?.display_name || "");
+  const [resumeLink, setResumeLink] = useState(user?.resume_link || "");
   const [photo, setPhoto] = useState(user?.photo || null);
   const [showPasswordSection, setShowPasswordSection] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -110,6 +111,7 @@ export default function ProfilePage() {
     const body = {};
     body.display_name = displayName.trim() || null;
     body.photo = photo;
+    body.resume_link = resumeLink.trim() || null;
 
     if (showPasswordSection && newPassword) {
       if (user.has_password) {
@@ -244,6 +246,33 @@ export default function ProfilePage() {
                 readOnly
                 style={{ fontSize: 14, background: "#f8f9fa", color: "#5f6368" }}
               />
+            </Form.Group>
+          </div>
+        </div>
+
+        {/* Resume panel */}
+        <div className="admin-panel mb-3">
+          <div className="admin-panel-header">Resume</div>
+          <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: 12 }}>
+            <Form.Group>
+              <Form.Label style={{ fontSize: 13, color: "#5f6368", marginBottom: 4 }}>Resume Link</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="url"
+                  placeholder="https://"
+                  value={resumeLink}
+                  onChange={(e) => setResumeLink(e.target.value)}
+                  style={{ fontSize: 14 }}
+                />
+                <Button
+                  variant="outline-secondary"
+                  disabled={!resumeLink.trim()}
+                  onClick={() => window.open(resumeLink.trim(), "_blank", "noopener,noreferrer")}
+                  aria-label="View resume"
+                >
+                  View
+                </Button>
+              </InputGroup>
             </Form.Group>
           </div>
         </div>

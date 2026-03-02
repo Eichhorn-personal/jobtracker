@@ -80,6 +80,11 @@ if (!userCols.includes("photo")) {
   db.exec("ALTER TABLE users ADD COLUMN photo TEXT");
 }
 
+// Migration: add resume_link column to users
+if (!userCols.includes("resume_link")) {
+  db.exec("ALTER TABLE users ADD COLUMN resume_link TEXT");
+}
+
 // Migration: rename source_link to job_board_link
 const jobCols = db.pragma("table_info(jobs)").map((c) => c.name);
 if (jobCols.includes("source_link")) {

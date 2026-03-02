@@ -105,10 +105,10 @@ test.describe("Jobs — edit", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".modal-title")).toContainText(/edit job/i);
-    // Form.Label has no controlId — check by input index: Date(0), Role(1), Company(2)
+    // Form.Label has no controlId — check by input index: Date(0), Company(1), Role(2)
     const textInputs = dialog.locator('input[type="text"]');
-    await expect(textInputs.nth(1)).toHaveValue("Engineer"); // Role
-    await expect(textInputs.nth(2)).toHaveValue("Acme");     // Company
+    await expect(textInputs.nth(1)).toHaveValue("Acme");     // Company
+    await expect(textInputs.nth(2)).toHaveValue("Engineer"); // Role
   });
 
   test("double-clicking a row opens the edit modal directly", async ({ page }) => {
@@ -126,7 +126,7 @@ test.describe("Jobs — edit", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     const textInputs = dialog.locator('input[type="text"]');
-    await textInputs.nth(1).fill("Senior Engineer"); // Role
+    await textInputs.nth(2).fill("Senior Engineer"); // Role
     // Submit button text is "Save Changes" in edit mode
     await dialog.getByRole("button", { name: /save changes/i }).click();
     await expect(table.getByText("Senior Engineer", { exact: true })).toBeVisible();
