@@ -191,7 +191,7 @@ router.post("/google", async (req, res) => {
     // 3. Brand-new user — INSERT OR IGNORE handles the rare simultaneous-login race
     const role = process.env.ADMIN_EMAIL && email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
       ? "admin"
-      : "contributor";
+      : "user";
     const result = db
       .prepare("INSERT OR IGNORE INTO users (username, password, google_id, role) VALUES (?, ?, ?, ?)")
       .run(email.toLowerCase(), "", googleId, role);

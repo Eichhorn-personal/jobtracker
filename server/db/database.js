@@ -66,8 +66,11 @@ if (!userCols.includes("google_id")) {
 
 // Migration: add role column to existing databases
 if (!userCols.includes("role")) {
-  db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'contributor'");
+  db.exec("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'");
 }
+
+// Migration: rename 'contributor' role to 'user'
+db.prepare("UPDATE users SET role = 'user' WHERE role = 'contributor'").run();
 
 // Migration: add display_name and photo columns
 if (!userCols.includes("display_name")) {

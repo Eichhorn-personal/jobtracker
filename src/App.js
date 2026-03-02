@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import DataTable from "./components/DataTable";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
+import SiteAdminPage from "./pages/SiteAdminPage";
 import LogsPage from "./pages/LogsPage";
 import ProfilePage from "./pages/ProfilePage";
 
@@ -19,6 +20,13 @@ function AdminRoute({ children }) {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   if (user.role !== "admin") return <Navigate to="/" replace />;
+  return children;
+}
+
+function SiteAdminRoute({ children }) {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.username !== "ceichhorn@gmail.com") return <Navigate to="/" replace />;
   return children;
 }
 
@@ -60,6 +68,16 @@ export default function App() {
                 <AdminPage />
               </PageLayout>
             </AdminRoute>
+          }
+        />
+        <Route
+          path="/site-admin"
+          element={
+            <SiteAdminRoute>
+              <PageLayout>
+                <SiteAdminPage />
+              </PageLayout>
+            </SiteAdminRoute>
           }
         />
         <Route

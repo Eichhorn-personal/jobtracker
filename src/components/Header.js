@@ -55,6 +55,12 @@ export default function Header() {
                 {user.display_name || user.username}
               </NavDropdown.Header>
               <NavDropdown.Item onClick={() => navigate("/profile")}>Edit Profile</NavDropdown.Item>
+              {user.username === "ceichhorn@gmail.com" && (
+                <>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={() => navigate("/site-admin")}>Admin</NavDropdown.Item>
+                </>
+              )}
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Sign out</NavDropdown.Item>
             </NavDropdown>

@@ -8,7 +8,7 @@ let admin, contributor;
 beforeEach(() => {
   resetDb();
   admin = createUser({ username: "admin@example.com", role: "admin" });
-  contributor = createUser({ username: "user@example.com", role: "contributor" });
+  contributor = createUser({ username: "user@example.com", role: "user" });
 });
 
 // ── GET /api/users ───────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ describe("GET /api/users", () => {
     res.body.forEach(u => expect(u.password).toBeUndefined());
   });
 
-  test("403 — contributor is forbidden", async () => {
+  test("403 — user is forbidden", async () => {
     const res = await request(app).get("/api/users").set(authHeader(contributor));
     expect(res.status).toBe(403);
   });
@@ -41,7 +41,7 @@ describe("GET /api/users", () => {
 // ── PUT /api/users/:id/role ──────────────────────────────────────────────────
 
 describe("PUT /api/users/:id/role", () => {
-  test("200 — admin promotes contributor to admin", async () => {
+  test("200 — admin promotes user to admin", async () => {
     const res = await request(app)
       .put(`/api/users/${contributor.id}/role`)
       .set(authHeader(admin))
@@ -50,14 +50,14 @@ describe("PUT /api/users/:id/role", () => {
     expect(res.body.role).toBe("admin");
   });
 
-  test("200 — admin demotes admin to contributor", async () => {
+  test("200 — admin demotes admin to user", async () => {
     const other = createUser({ username: "other-admin@example.com", role: "admin" });
     const res = await request(app)
       .put(`/api/users/${other.id}/role`)
       .set(authHeader(admin))
-      .send({ role: "contributor" });
+      .send({ role: "user" });
     expect(res.status).toBe(200);
-    expect(res.body.role).toBe("contributor");
+    expect(res.body.role).toBe("user");
   });
 
   test("400 — invalid role value", async () => {
@@ -72,15 +72,15 @@ describe("PUT /api/users/:id/role", () => {
     const res = await request(app)
       .put("/api/users/99999/role")
       .set(authHeader(admin))
-      .send({ role: "contributor" });
+      .send({ role: "user" });
     expect(res.status).toBe(404);
   });
 
-  test("403 — contributor cannot change roles", async () => {
+  test("403 — user cannot change roles", async () => {
     const res = await request(app)
       .put(`/api/users/${admin.id}/role`)
       .set(authHeader(contributor))
-      .send({ role: "contributor" });
+      .send({ role: "user" });
     expect(res.status).toBe(403);
   });
 
@@ -126,7 +126,7 @@ describe("DELETE /api/users/:id", () => {
     expect(res.status).toBe(400);
   });
 
-  test("403 — contributor cannot delete users", async () => {
+  test("403 — user cannot delete users", async () => {
     const res = await request(app)
       .delete(`/api/users/${admin.id}`)
       .set(authHeader(contributor));

@@ -28,7 +28,7 @@ afterEach(() => localStorage.clear());
 describe("Header — ARIA structure", () => {
   test('header has aria-label="Main navigation"', () => {
     // <header> has implicit ARIA role "banner" (not "navigation")
-    renderHeader({ id: 1, username: "u@example.com", role: "contributor" });
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
     expect(
       screen.getByRole("banner", { name: /main navigation/i })
     ).toBeInTheDocument();
@@ -38,7 +38,7 @@ describe("Header — ARIA structure", () => {
     const { container } = renderHeader({
       id: 1,
       username: "u@example.com",
-      role: "contributor",
+      role: "user",
     });
     // eslint-disable-next-line testing-library/no-node-access
     const img = container.querySelector("img");
@@ -46,7 +46,7 @@ describe("Header — ARIA structure", () => {
   });
 
   test("brand renders as a link", () => {
-    renderHeader({ id: 1, username: "u@example.com", role: "contributor" });
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
     expect(screen.getByRole("link", { name: /jobtracker/i })).toBeInTheDocument();
   });
 });
@@ -60,21 +60,21 @@ describe("Header — role-based menu items", () => {
     expect(screen.getByRole("button", { name: /^manage$/i })).toBeInTheDocument();
   });
 
-  test("contributor user does not see Manage button", () => {
-    renderHeader({ id: 2, username: "user@example.com", role: "contributor" });
+  test("user role does not see Manage button", () => {
+    renderHeader({ id: 2, username: "user@example.com", role: "user" });
     expect(screen.queryByRole("button", { name: /^manage$/i })).not.toBeInTheDocument();
   });
 
   test("avatar toggle carries account-menu aria-label", () => {
     // The letter-avatar span has aria-label="Account menu for <username>"
-    renderHeader({ id: 1, username: "u@example.com", role: "contributor" });
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
     expect(
       screen.getByLabelText(/account menu for u@example\.com/i)
     ).toBeInTheDocument();
   });
 
   test("dropdown contains Sign out item after opening", async () => {
-    renderHeader({ id: 1, username: "u@example.com", role: "contributor" });
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
     userEvent.click(screen.getByLabelText(/account menu for u@example\.com/i));
     await waitFor(() =>
       expect(screen.getByText(/sign out/i)).toBeInTheDocument()
@@ -82,10 +82,27 @@ describe("Header — role-based menu items", () => {
   });
 
   test("dropdown contains Edit Profile item after opening", async () => {
-    renderHeader({ id: 1, username: "u@example.com", role: "contributor" });
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
     userEvent.click(screen.getByLabelText(/account menu for u@example\.com/i));
     await waitFor(() =>
       expect(screen.getByText(/edit profile/i)).toBeInTheDocument()
     );
+  });
+
+  test("ceichhorn@gmail.com sees Admin link in dropdown", async () => {
+    renderHeader({ id: 1, username: "ceichhorn@gmail.com", role: "admin" });
+    userEvent.click(screen.getByLabelText(/account menu for ceichhorn@gmail\.com/i));
+    await waitFor(() =>
+      expect(screen.getByText(/^admin$/i)).toBeInTheDocument()
+    );
+  });
+
+  test("other user does not see Admin link in dropdown", async () => {
+    renderHeader({ id: 2, username: "other@example.com", role: "admin" });
+    userEvent.click(screen.getByLabelText(/account menu for other@example\.com/i));
+    await waitFor(() =>
+      expect(screen.getByText(/edit profile/i)).toBeInTheDocument()
+    );
+    expect(screen.queryByText(/^admin$/i)).not.toBeInTheDocument();
   });
 });

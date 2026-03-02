@@ -18,8 +18,8 @@ router.get("/", (req, res) => {
 // PUT /api/users/:id/role
 router.put("/:id/role", (req, res) => {
   const { role } = req.body;
-  if (!["admin", "contributor"].includes(role)) {
-    return res.status(400).json({ error: "Role must be admin or contributor" });
+  if (!["admin", "user"].includes(role)) {
+    return res.status(400).json({ error: "Role must be admin or user" });
   }
   const user = db.prepare("SELECT id FROM users WHERE id = ?").get(req.params.id);
   if (!user) return res.status(404).json({ error: "User not found" });
