@@ -8,6 +8,29 @@ import "../DataTable.css";
 
 const COLUMNS = ["Date", "Role", "Company", "Status"];
 
+function SortIndicator({ col, sortConfig }) {
+  if (sortConfig.col !== col) return null;
+  return (
+    <svg
+      width="9" height="9" viewBox="0 0 9 9" fill="currentColor"
+      className="sort-indicator" aria-hidden="true"
+    >
+      {sortConfig.dir === "asc"
+        ? <polygon points="4.5,1 8.5,8 0.5,8" />
+        : <polygon points="4.5,8 8.5,1 0.5,1" />
+      }
+    </svg>
+  );
+}
+
+const parseDateVal = (str) => {
+  if (!str) return 0;
+  const parts = str.split("/");
+  if (parts.length !== 3) return 0;
+  const [m, d, y] = parts;
+  return parseInt(`${y}${m.padStart(2, "0")}${d.padStart(2, "0")}`, 10);
+};
+
 const isArchived = (row) => ARCHIVED_STATUSES.includes((row.Status || "").toLowerCase());
 
 function Chevron({ open }) {
@@ -37,6 +60,7 @@ export default function DataTable() {
   const [statusColorMap, setStatusColorMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [showArchived, setShowArchived] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ col: "Date", dir: "desc" });
   const [showAddModal, setShowAddModal] = useState(false);
   const [viewingRow, setViewingRow] = useState(null);
   const [confirmRow, setConfirmRow] = useState(null);
@@ -107,12 +131,30 @@ export default function DataTable() {
   const toggleSelect = (row) =>
     setSelectedRow(prev => prev?.id === row.id ? null : row);
 
+  const handleHeaderClick = (col) => {
+    setSortConfig(prev =>
+      prev.col === col
+        ? { col, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { col, dir: col === "Date" ? "desc" : "asc" }
+    );
+  };
+
+  const sortRows = (rowSet) => {
+    const { col, dir } = sortConfig;
+    return [...rowSet].sort((a, b) => {
+      const cmp = col === "Date"
+        ? parseDateVal(a.Date) - parseDateVal(b.Date)
+        : (a[col] || "").localeCompare(b[col] || "");
+      return dir === "asc" ? cmp : -cmp;
+    });
+  };
+
   const q = searchTerm.trim().toLowerCase();
   const matchesSearch = (r) =>
     !q || [(r.Role || ""), (r.Company || "")].some(v => v.toLowerCase().includes(q));
 
-  const activeRows   = rows.filter(r => !isArchived(r) && matchesSearch(r));
-  const archivedRows = rows.filter(r =>  isArchived(r) && matchesSearch(r));
+  const activeRows   = sortRows(rows.filter(r => !isArchived(r) && matchesSearch(r)));
+  const archivedRows = sortRows(rows.filter(r =>  isArchived(r) && matchesSearch(r)));
 
   const renderRows = (rowSet) => rowSet.map(row => (
     <div
@@ -245,11 +287,19 @@ export default function DataTable() {
         {renderCards(activeRows)}
       </div>
 
-      <div className="sheet-scroll d-none d-md-block" role="table" aria-label="Job applications">
+      <div className="sheet-scroll sheet-scroll--limited d-none d-md-block" role="table" aria-label="Job applications">
         <div role="rowgroup">
           <div className="sheet-grid sheet-header" role="row">
             {COLUMNS.map(col => (
-              <div key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}>{col}</div>
+              <div
+                key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}
+                aria-sort={sortConfig.col === col ? (sortConfig.dir === "asc" ? "ascending" : "descending") : "none"}
+              >
+                <button className="sheet-header-btn" onClick={() => handleHeaderClick(col)}>
+                  {col}
+                  <SortIndicator col={col} sortConfig={sortConfig} />
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -294,11 +344,19 @@ export default function DataTable() {
               </span>
             </button>
             {showArchived && (
-              <div className="sheet-scroll" style={{ borderRadius: "0 0 8px 8px" }} role="table" aria-label="Archived job applications">
+              <div className="sheet-scroll sheet-scroll--limited" style={{ borderRadius: "0 0 8px 8px" }} role="table" aria-label="Archived job applications">
                 <div role="rowgroup">
                   <div className="sheet-grid sheet-header" role="row">
                     {COLUMNS.map(col => (
-                      <div key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}>{col}</div>
+                      <div
+                        key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}
+                        aria-sort={sortConfig.col === col ? (sortConfig.dir === "asc" ? "ascending" : "descending") : "none"}
+                      >
+                        <button className="sheet-header-btn" onClick={() => handleHeaderClick(col)}>
+                          {col}
+                          <SortIndicator col={col} sortConfig={sortConfig} />
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>

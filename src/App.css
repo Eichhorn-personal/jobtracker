@@ -259,6 +259,38 @@
 [data-bs-theme="dark"] .arrow-btn { color: #9aa0a6; }
 [data-bs-theme="dark"] .arrow-btn:not(:disabled):hover { color: #e8eaed; }
 
+/* ── Log filter select ───────────────────────────────────────── */
+.log-filter-select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #3c4043;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+
+.log-filter-select:hover {
+  background: #f8f9fa;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.2);
+}
+
+.log-filter-select:focus {
+  border-color: #1a73e8;
+}
+
+[data-bs-theme="dark"] .log-filter-select {
+  background: #2b2d30;
+  color: #e8eaed;
+  border-color: #5f6368;
+}
+
+[data-bs-theme="dark"] .log-filter-select:hover {
+  background: #3c4043;
+}
+
 /* ── Event chips (Logs page) ─────────────────────────────────── */
 .event-primary   { background: #e8f0fe; color: #1967d2; }
 .event-info      { background: #e4f7fb; color: #007b83; }
