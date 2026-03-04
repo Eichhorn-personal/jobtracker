@@ -35,14 +35,17 @@ function SortIndicator({ dir }) {
 }
 
 function EntryDetails({ data }) {
+  const pairs = Object.entries(data).filter(([k]) => k !== "id");
+  if (!pairs.length) return null;
   return (
-    <span style={{ display: "flex", flexWrap: "wrap", gap: "0 12px" }}>
-      {Object.entries(data)
-        .filter(([k]) => k !== "id")
-        .map(([k, v]) => (
-          <span key={k}>{k}={String(v)}</span>
-        ))}
-    </span>
+    <>
+      {pairs.map(([k, v]) => (
+        <span key={k} className="log-detail-pair">
+          <span className="log-detail-key">{k}</span>
+          <span className="log-detail-val">{String(v)}</span>
+        </span>
+      ))}
+    </>
   );
 }
 
@@ -80,14 +83,16 @@ export default function LogsPage() {
     });
 
   return (
-    <Container className="pt-3" style={{ maxWidth: 900 }}>
+    <Container className="pt-3 px-0 px-md-3" style={{ maxWidth: 900 }}>
 
       {/* Toolbar */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        <button className="btn-toolbar-action" onClick={() => navigate("/admin")} aria-label="Back to admin">
-          ← Back
+      <div className="px-3 px-md-0" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+        <button className="btn-toolbar-action" onClick={() => navigate("/admin")} aria-label="Back to admin" style={{ padding: "6px 10px" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
         </button>
-        <h1 style={{ margin: 0, fontSize: 18, fontWeight: 400, color: "#5f6368", flexGrow: 1 }}>
+        <h1 className="text-muted" style={{ margin: 0, fontSize: 18, fontWeight: 400, flexGrow: 1 }}>
           Activity Log
         </h1>
         <div className="search-box">
@@ -120,8 +125,11 @@ export default function LogsPage() {
             <option key={evt} value={evt}>{evt}</option>
           ))}
         </select>
-        <button className="btn-toolbar-action" onClick={load}>
-          Refresh
+        <button className="btn-toolbar-action" onClick={load} aria-label="Refresh" style={{ padding: "6px 10px" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
         </button>
       </div>
 
@@ -130,52 +138,72 @@ export default function LogsPage() {
         {entries === null ? (
           <div className="text-center mt-5"><Spinner animation="border" /></div>
         ) : entries.length === 0 ? (
-          <p className="text-muted">No log entries yet.</p>
+          <p className="text-muted px-3 px-md-0">No log entries yet.</p>
         ) : displayed.length === 0 ? (
-          <p className="text-muted">No entries match the current filter.</p>
+          <p className="text-muted px-3 px-md-0">No entries match the current filter.</p>
         ) : (
-          <div className="sheet-scroll" role="table" aria-label="Activity log entries">
-
-            {/* Header */}
-            <div className="sheet-grid sheet-header" role="row">
-              <div
-                className="sheet-cell" role="columnheader"
-                style={{ width: 190, flexShrink: 0 }}
-                aria-sort={sortDir === "asc" ? "ascending" : "descending"}
-              >
-                <button
-                  className="sheet-header-btn"
-                  onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-                >
-                  Time <SortIndicator dir={sortDir} />
-                </button>
-              </div>
-              <div className="sheet-cell" role="columnheader" style={{ width: 140, flexShrink: 0 }}>Event</div>
-              <div className="sheet-cell" role="columnheader" style={{ flex: 1, minWidth: 100 }}>Details</div>
+          <>
+            {/* ── Mobile cards ─────────────────────────────────────── */}
+            <div className="log-cards d-md-none" aria-label="Activity log entries">
+              {displayed.map((e, i) => (
+                <div key={i} className="log-card">
+                  <div className="log-card-header">
+                    <span className={`status-chip ${EVENT_CHIP[e.event] || "event-secondary"}`} style={{ fontSize: 11 }}>
+                      {e.event}
+                    </span>
+                    <span className="log-card-time">{formatTimestamp(e.timestamp)}</span>
+                  </div>
+                  <div className="log-card-details">
+                    <EntryDetails data={e.data} />
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Rows */}
-            {displayed.map((e, i) => (
-              <div key={i} className="sheet-grid" role="row">
-                <div className="sheet-cell" role="cell" style={{ width: 190, flexShrink: 0 }}>
-                  <span style={{ padding: "4px 10px", fontSize: 13, color: "#5f6368" }}>
-                    {formatTimestamp(e.timestamp)}
-                  </span>
-                </div>
-                <div className="sheet-cell" role="cell" style={{ width: 140, flexShrink: 0 }}>
-                  <span className={`status-chip ${EVENT_CHIP[e.event] || "event-secondary"}`}>
-                    {e.event}
-                  </span>
-                </div>
-                <div className="sheet-cell" role="cell" style={{ flex: 1, minWidth: 100, fontSize: 13 }}>
-                  <span style={{ padding: "4px 10px", overflow: "hidden" }}>
-                    <EntryDetails data={e.data} />
-                  </span>
-                </div>
-              </div>
-            ))}
+            {/* ── Desktop table ─────────────────────────────────────── */}
+            <div className="sheet-scroll sheet-scroll--limited d-none d-md-block" style={{ maxHeight: "70vh" }} role="table" aria-label="Activity log entries">
 
-          </div>
+              {/* Header */}
+              <div className="sheet-grid sheet-header" role="row">
+                <div
+                  className="sheet-cell" role="columnheader"
+                  style={{ width: 190, flexShrink: 0 }}
+                  aria-sort={sortDir === "asc" ? "ascending" : "descending"}
+                >
+                  <button
+                    className="sheet-header-btn"
+                    onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
+                  >
+                    Time <SortIndicator dir={sortDir} />
+                  </button>
+                </div>
+                <div className="sheet-cell" role="columnheader" style={{ width: 140, flexShrink: 0 }}>Event</div>
+                <div className="sheet-cell" role="columnheader" style={{ flex: 1, minWidth: 100 }}>Details</div>
+              </div>
+
+              {/* Rows */}
+              {displayed.map((e, i) => (
+                <div key={i} className="sheet-grid" role="row">
+                  <div className="sheet-cell" role="cell" style={{ width: 190, flexShrink: 0 }}>
+                    <span style={{ padding: "4px 10px", fontSize: 13 }}>
+                      {formatTimestamp(e.timestamp)}
+                    </span>
+                  </div>
+                  <div className="sheet-cell" role="cell" style={{ width: 140, flexShrink: 0 }}>
+                    <span className={`status-chip ${EVENT_CHIP[e.event] || "event-secondary"}`}>
+                      {e.event}
+                    </span>
+                  </div>
+                  <div className="sheet-cell" role="cell" style={{ flex: 1, minWidth: 100 }}>
+                    <div style={{ padding: "4px 10px", display: "flex", flexWrap: "wrap", gap: "2px 12px", overflow: "hidden" }}>
+                      <EntryDetails data={e.data} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+            </div>
+          </>
         )}
       </div>
     </Container>

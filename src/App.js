@@ -53,7 +53,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <PageLayout>
-                <Container className="pt-3">
+                <Container className="pt-3 px-0 px-md-3">
                   <DataTable />
                 </Container>
               </PageLayout>

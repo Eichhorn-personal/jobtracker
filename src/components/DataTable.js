@@ -192,7 +192,12 @@ export default function DataTable() {
         <div className="job-card-role">{row.Role || "—"}</div>
         <div className="job-card-company">{row.Company || ""}</div>
         <div className="job-card-meta">
-          {[row.Status, row.Date].filter(Boolean).join(" · ")}
+          {row.Status && (
+            <span className={`status-chip ${statusColorMap[row.Status] || statusClass(row.Status)}`} style={{ fontSize: 11 }}>
+              {row.Status}
+            </span>
+          )}
+          {row.Date && <span>{row.Date}</span>}
         </div>
       </div>
     </div>
@@ -202,7 +207,7 @@ export default function DataTable() {
 
   return (
     <Container fluid className="p-0">
-      <div style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div className="px-3 px-md-0" style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <button className="btn-compose" onClick={() => setShowAddModal(true)}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -308,7 +313,7 @@ export default function DataTable() {
 
       {/* ── Archived table (Ghosted / Duplicate) ───────────────────── */}
       {archivedRows.length > 0 && (
-        <div style={{ marginTop: 16 }}>
+        <div className="px-3 px-md-0" style={{ marginTop: 16 }}>
 
           {/* Mobile archived */}
           <div className="d-md-none">

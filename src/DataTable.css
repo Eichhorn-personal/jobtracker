@@ -263,10 +263,19 @@
   color: #202124;
 }
 
-.job-card-company, .job-card-meta {
+.job-card-company {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 12px;
+  color: #5f6368;
+}
+
+.job-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
   font-size: 12px;
   color: #5f6368;
 }
@@ -330,4 +339,78 @@
 
 [data-bs-theme="dark"] .job-card-btn:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Log entry cards (mobile) ────────────────────────────────── */
+.log-cards {
+  border-radius: 8px;
+  border: 1px solid #e8eaed;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(60, 64, 67, 0.1), 0 2px 6px rgba(60, 64, 67, 0.07);
+}
+
+.log-card {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8eaed;
+}
+
+.log-card:last-child { border-bottom: none; }
+
+.log-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.log-card-time {
+  font-size: 12px;
+  color: #5f6368;
+  flex-shrink: 0;
+}
+
+.log-card-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.log-detail-pair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.log-detail-key {
+  color: #80868b;
+  font-size: 11px;
+}
+
+.log-detail-val {
+  color: #202124;
+  word-break: break-all;
+}
+
+[data-bs-theme="dark"] .log-cards {
+  background: #2b2d30;
+  border-color: #3c4043;
+}
+
+[data-bs-theme="dark"] .log-card {
+  border-bottom-color: #3c4043;
+}
+
+[data-bs-theme="dark"] .log-card-time {
+  color: #9aa0a6;
+}
+
+[data-bs-theme="dark"] .log-detail-key {
+  color: #5f6368;
+}
+
+[data-bs-theme="dark"] .log-detail-val {
+  color: #e8eaed;
 }
