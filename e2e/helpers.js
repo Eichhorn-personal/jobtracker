@@ -11,7 +11,7 @@ const ADMIN       = { id: 1, username: "admin@example.com", role: "admin" };
 
 const SAMPLE_JOBS = [
   { id: 1, Role: "Engineer",  Company: "Acme",   Date: "01/15/2025", Status: "Applied"  },
-  { id: 2, Role: "Designer",  Company: "Globex", Date: "02/20/2025", Status: "Rejected" },
+  { id: 2, Role: "Designer",  Company: "Globex", Date: "02/20/2025", Status: "Applied"  },
 ];
 
 const EMPTY_DROPDOWNS = {};

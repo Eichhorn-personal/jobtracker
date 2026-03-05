@@ -7,7 +7,7 @@
 const { test, expect } = require("@playwright/test");
 const { setAuth, mockApi, CONTRIBUTOR, SAMPLE_JOBS } = require("./helpers");
 
-// SAMPLE_JOBS contains "Applied" and "Rejected" — no archived statuses.
+// SAMPLE_JOBS contains only "Applied" rows — no archived statuses.
 // Extend it with one Ghosted and one Duplicate row for these tests.
 const JOBS_WITH_ARCHIVED = [
   ...SAMPLE_JOBS,

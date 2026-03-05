@@ -44,10 +44,10 @@ test.describe("Jobs — add", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     // Form.Label has no controlId — target text inputs by index in the form.
-    // Date(0) is readonly in add mode; Role(1), Company(2) are editable.
+    // Job Board Link(0), Date(1, disabled), Company(2), Role(3), Direct Company Job Link(4)
     const textInputs = dialog.locator('input[type="text"]');
-    await textInputs.nth(1).fill("QA Engineer"); // Role
     await textInputs.nth(2).fill("Initech");     // Company
+    await textInputs.nth(3).fill("QA Engineer"); // Role
     // Submit button text is "Add Job" in add mode
     await dialog.getByRole("button", { name: /^add job$/i }).click();
     // The new row should appear (API mock echoes back the submitted data with id=99)
@@ -105,10 +105,10 @@ test.describe("Jobs — edit", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".modal-title")).toContainText(/edit job/i);
-    // Form.Label has no controlId — check by input index: Date(0), Company(1), Role(2)
+    // Form.Label has no controlId — check by input index: Job Board Link(0), Date(1), Company(2), Role(3)
     const textInputs = dialog.locator('input[type="text"]');
-    await expect(textInputs.nth(1)).toHaveValue("Acme");     // Company
-    await expect(textInputs.nth(2)).toHaveValue("Engineer"); // Role
+    await expect(textInputs.nth(2)).toHaveValue("Acme");     // Company
+    await expect(textInputs.nth(3)).toHaveValue("Engineer"); // Role
   });
 
   test("double-clicking a row opens the edit modal directly", async ({ page }) => {
@@ -126,7 +126,7 @@ test.describe("Jobs — edit", () => {
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     const textInputs = dialog.locator('input[type="text"]');
-    await textInputs.nth(2).fill("Senior Engineer"); // Role
+    await textInputs.nth(3).fill("Senior Engineer"); // Role
     // Submit button text is "Save Changes" in edit mode
     await dialog.getByRole("button", { name: /save changes/i }).click();
     await expect(table.getByText("Senior Engineer", { exact: true })).toBeVisible();

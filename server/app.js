@@ -16,7 +16,12 @@ const app = express();
 // Trust the first proxy (Fly.io) so req.ip and rate-limiting work correctly
 app.set("trust proxy", 1);
 
-app.use(helmet());
+app.use(helmet({
+  // Google OAuth popup sends credentials back via window.postMessage;
+  // same-origin-allow-popups permits that while still blocking other
+  // cross-origin window interactions.
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+}));
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:3000").split(",").map(s => s.trim());
 app.use(cors({

@@ -110,12 +110,12 @@ describe("AddJobModal — form submission", () => {
     const onAdd = jest.fn().mockResolvedValue(undefined);
     renderModal({ onAdd });
     // Modal renders in a portal; use document to reach its inputs.
-    // Date is pre-filled (readonly), Job Board Link is type="url" — so
-    // input[type='text']:not([readonly]) starts at Role then Company.
+    // Date is disabled in add mode; selector excludes both readonly and disabled.
+    // Remaining order: Job Board Link(0), Company(1), Role(2), Direct Company Job Link(3)
     // eslint-disable-next-line testing-library/no-node-access
-    const editableText = document.querySelectorAll("input[type='text']:not([readonly])");
-    fireEvent.change(editableText[0], { target: { value: "Engineer" } }); // Role
+    const editableText = document.querySelectorAll("input[type='text']:not([readonly]):not([disabled])");
     fireEvent.change(editableText[1], { target: { value: "Acme" } });     // Company
+    fireEvent.change(editableText[2], { target: { value: "Engineer" } }); // Role
     userEvent.click(screen.getByRole("button", { name: /add job/i }));
     await waitFor(() => expect(onAdd).toHaveBeenCalledTimes(1));
   });
