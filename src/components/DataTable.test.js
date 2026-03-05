@@ -64,35 +64,24 @@ describe("DataTable — ARIA structure", () => {
   });
 });
 
-// ── row selection and toolbar ─────────────────────────────────────────────────
-// DataTable uses a selection model: clicking a row reveals Edit/Delete toolbar buttons.
+// ── inline action buttons ─────────────────────────────────────────────────────
+// Edit and Delete icon buttons appear inline on each row (not in a toolbar).
 
 describe("DataTable — action buttons", () => {
-  test("clicking a row reveals Edit toolbar button", async () => {
+  test("each row has an Edit button", async () => {
     renderDataTable();
     await act(async () => {});
-    // rows with aria-selected are data rows (header row has no aria-selected)
-    const dataRows = screen
-      .getAllByRole("row")
-      .filter((r) => r.getAttribute("aria-selected") !== null);
-    userEvent.click(dataRows[0]);
-    await waitFor(() =>
-      expect(screen.getByRole("button", { name: /edit/i })).toBeInTheDocument()
-    );
+    expect(
+      screen.getAllByRole("button", { name: /edit engineer/i }).length
+    ).toBeGreaterThan(0);
   });
 
-  test("clicking a row reveals Delete toolbar button", async () => {
+  test("each row has a Delete button", async () => {
     renderDataTable();
     await act(async () => {});
-    const dataRows = screen
-      .getAllByRole("row")
-      .filter((r) => r.getAttribute("aria-selected") !== null);
-    userEvent.click(dataRows[0]);
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: /delete/i })
-      ).toBeInTheDocument()
-    );
+    expect(
+      screen.getAllByRole("button", { name: /delete engineer/i }).length
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -116,16 +105,12 @@ describe("DataTable — double-click to edit", () => {
 // ── delete confirmation modal ─────────────────────────────────────────────────
 
 describe("DataTable — delete confirmation", () => {
-  // Helper: load table, select the first row, click the toolbar Delete button
+  // Helper: load table, click the inline Delete button on the first active row
   async function openDeleteModal() {
     renderDataTable();
     await act(async () => {});
-    const dataRows = screen
-      .getAllByRole("row")
-      .filter((r) => r.getAttribute("aria-selected") !== null);
-    userEvent.click(dataRows[0]);
-    await waitFor(() => screen.getByRole("button", { name: /delete/i }));
-    userEvent.click(screen.getByRole("button", { name: /delete/i }));
+    const deleteBtn = screen.getAllByRole("button", { name: /delete engineer/i })[0];
+    userEvent.click(deleteBtn);
     await waitFor(() => screen.getByRole("dialog"));
   }
 
@@ -144,11 +129,11 @@ describe("DataTable — delete confirmation", () => {
 
   test("confirming delete removes the row from the table", async () => {
     await openDeleteModal();
-    // "Delete" (exact) targets the modal danger button, not the toolbar "✕ Delete"
+    // "Delete" (exact) targets the modal danger button
     userEvent.click(screen.getByRole("button", { name: "Delete" }));
     await waitFor(() =>
       expect(
-        screen.queryAllByRole("button", { name: /delete/i })
+        screen.queryAllByRole("button", { name: /delete engineer/i })
       ).toHaveLength(0)
     );
   });

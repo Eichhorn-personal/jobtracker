@@ -165,6 +165,28 @@ export default function DataTable() {
       onClick={() => toggleSelect(row)}
       onDoubleClick={() => setViewingRow(row)}
     >
+      <div role="cell" style={{ width: 68, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 2, padding: "0 4px" }}>
+        <button
+          className="row-action-btn"
+          onClick={(e) => { e.stopPropagation(); setViewingRow(row); }}
+          title="Edit"
+          aria-label={`Edit ${row.Role || "record"}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+        </button>
+        <button
+          className="row-action-btn row-action-btn--delete"
+          onClick={(e) => { e.stopPropagation(); setConfirmRow(row); }}
+          title="Delete"
+          aria-label={`Delete ${row.Role || "record"}`}
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
       {COLUMNS.map(col => (
         <div key={col} className="sheet-cell" role="cell" style={COL_STYLE[col]}>
           {col === "Status" ? (
@@ -188,6 +210,28 @@ export default function DataTable() {
       role="row"
       aria-selected={selectedRow?.id === row.id}
     >
+      <div className="job-card-actions">
+        <button
+          className="job-card-btn"
+          onClick={(e) => { e.stopPropagation(); setViewingRow(row); }}
+          aria-label={`Edit ${row.Role || "record"}`}
+          title="Edit"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+          </svg>
+        </button>
+        <button
+          className="job-card-btn job-card-btn--delete"
+          onClick={(e) => { e.stopPropagation(); setConfirmRow(row); }}
+          aria-label={`Delete ${row.Role || "record"}`}
+          title="Delete"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
       <div className="job-card-main">
         <div className="job-card-role">{row.Role || "—"}</div>
         <div className="job-card-company">{row.Company || ""}</div>
@@ -236,24 +280,6 @@ export default function DataTable() {
           )}
         </div>
 
-        {selectedRow && (
-          <>
-            <button
-              className="btn-toolbar-action"
-              onClick={() => setViewingRow(selectedRow)}
-              title="Edit selected record"
-            >
-              ✏ Edit
-            </button>
-            <button
-              className="btn-toolbar-action btn-toolbar-delete"
-              onClick={() => setConfirmRow(selectedRow)}
-              title="Delete selected record"
-            >
-              ✕ Delete
-            </button>
-          </>
-        )}
       </div>
 
       <AddJobModal
@@ -295,6 +321,7 @@ export default function DataTable() {
       <div className="sheet-scroll sheet-scroll--limited d-none d-md-block" role="table" aria-label="Job applications">
         <div role="rowgroup">
           <div className="sheet-grid sheet-header" role="row">
+            <div aria-hidden="true" style={{ width: 68, flexShrink: 0 }} />
             {COLUMNS.map(col => (
               <div
                 key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}
@@ -352,6 +379,7 @@ export default function DataTable() {
               <div className="sheet-scroll sheet-scroll--limited" style={{ borderRadius: "0 0 8px 8px" }} role="table" aria-label="Archived job applications">
                 <div role="rowgroup">
                   <div className="sheet-grid sheet-header" role="row">
+                    <div aria-hidden="true" style={{ width: 68, flexShrink: 0 }} />
                     {COLUMNS.map(col => (
                       <div
                         key={col} className="sheet-cell" role="columnheader" style={COL_STYLE[col]}

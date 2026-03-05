@@ -134,20 +134,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 0.6;
   transition: opacity 0.1s, background 0.1s;
   cursor: pointer;
-  color: #5f6368;
+  color: #1a73e8;
   font-size: 14px;
   padding: 0;
 }
 
-.sheet-grid:hover .row-action-btn {
+.row-action-btn--delete {
+  color: #ea4335;
+}
+
+.row-action-btn:focus,
+.sheet-grid:hover .row-action-btn,
+.sheet-grid--selected .row-action-btn {
   opacity: 1;
 }
 
 .row-action-btn:hover {
   background: rgba(60, 64, 67, 0.15);
+}
+
+.row-action-btn--delete:hover {
+  background: rgba(234, 67, 53, 0.15);
+  color: #ea4335;
+}
+
+.job-card-btn--delete:hover {
+  background: rgba(234, 67, 53, 0.1);
+  color: #ea4335;
 }
 
 /* ── Link styles ─────────────────────────────────────────────── */
@@ -204,7 +220,11 @@
 }
 
 [data-bs-theme="dark"] .row-action-btn {
-  color: #9aa0a6;
+  color: #8ab4f8;
+}
+
+[data-bs-theme="dark"] .row-action-btn--delete {
+  color: #f28b82;
 }
 
 [data-bs-theme="dark"] .row-action-btn:hover {
@@ -280,7 +300,7 @@
   color: #5f6368;
 }
 
-.job-card-actions { display: flex; flex-shrink: 0; gap: 4px; }
+.job-card-actions { display: flex; flex-direction: column; flex-shrink: 0; gap: 2px; align-items: center; }
 
 .job-card-btn {
   width: 40px;
@@ -294,9 +314,13 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  color: #5f6368;
+  color: #1a73e8;
   opacity: 0.75;
   transition: background 0.1s, opacity 0.1s;
+}
+
+.job-card-btn--delete {
+  color: #ea4335;
 }
 
 .job-card-btn:hover {
@@ -334,7 +358,11 @@
 }
 
 [data-bs-theme="dark"] .job-card-btn {
-  color: #9aa0a6;
+  color: #8ab4f8;
+}
+
+[data-bs-theme="dark"] .job-card-btn--delete {
+  color: #f28b82;
 }
 
 [data-bs-theme="dark"] .job-card-btn:hover {
