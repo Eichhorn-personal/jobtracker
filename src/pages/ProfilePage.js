@@ -13,6 +13,7 @@ export default function ProfilePage() {
   const [displayName, setDisplayName] = useState(user?.display_name || "");
   const [resumeLink, setResumeLink] = useState(user?.resume_link || "");
   const [linkedinUrl, setLinkedinUrl] = useState(user?.linkedin_url || "");
+  const [githubUrl, setGithubUrl] = useState(user?.github_url || "");
   const [photo, setPhoto] = useState(user?.photo || null);
   const [showPasswordSection, setShowPasswordSection] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [googlePicture] = useState(() => localStorage.getItem("authGooglePicture"));
   const [googlePictureDismissed, setGooglePictureDismissed] = useState(false);
+  const [copied, setCopied] = useState(null);
   const [googlePhotoImporting, setGooglePhotoImporting] = useState(false);
 
   const fileInputRef = useRef(null);
@@ -64,6 +66,13 @@ export default function ProfilePage() {
   const handleDismissGooglePhoto = () => {
     localStorage.removeItem("authGooglePicture");
     setGooglePictureDismissed(true);
+  };
+
+  const handleCopy = (key, value) => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 1500);
+    });
   };
 
   const handleImportGooglePhoto = async () => {
@@ -114,6 +123,7 @@ export default function ProfilePage() {
     body.photo = photo;
     body.resume_link = resumeLink.trim() || null;
     body.linkedin_url = linkedinUrl.trim() || null;
+    body.github_url = githubUrl.trim() || null;
 
     if (showPasswordSection && newPassword) {
       if (user.has_password) {
@@ -269,10 +279,13 @@ export default function ProfilePage() {
                 <Button
                   variant="outline-secondary"
                   disabled={!resumeLink.trim()}
-                  onClick={() => window.open(resumeLink.trim(), "_blank", "noopener,noreferrer")}
-                  aria-label="View resume"
+                  onClick={() => handleCopy("resume", resumeLink.trim())}
+                  aria-label="Copy resume link"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  {copied === "resume"
+                    ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  }
                 </Button>
               </InputGroup>
             </Form.Group>
@@ -289,10 +302,36 @@ export default function ProfilePage() {
                 <Button
                   variant="outline-secondary"
                   disabled={!linkedinUrl.trim()}
-                  onClick={() => window.open(linkedinUrl.trim(), "_blank", "noopener,noreferrer")}
-                  aria-label="View LinkedIn profile"
+                  onClick={() => handleCopy("linkedin", linkedinUrl.trim())}
+                  aria-label="Copy LinkedIn URL"
                 >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  {copied === "linkedin"
+                    ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  }
+                </Button>
+              </InputGroup>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label style={{ fontSize: 13, color: "#5f6368", marginBottom: 4 }}>GitHub Profile</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="url"
+                  placeholder="https://github.com/yourname"
+                  value={githubUrl}
+                  onChange={(e) => setGithubUrl(e.target.value)}
+                  style={{ fontSize: 14 }}
+                />
+                <Button
+                  variant="outline-secondary"
+                  disabled={!githubUrl.trim()}
+                  onClick={() => handleCopy("github", githubUrl.trim())}
+                  aria-label="Copy GitHub URL"
+                >
+                  {copied === "github"
+                    ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                    : <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  }
                 </Button>
               </InputGroup>
             </Form.Group>

@@ -4,6 +4,16 @@ import { formatDate, cleanJobUrl } from "../utils/dateFormat";
 import { detectAts } from "../utils/atsDetect";
 import { useApi } from "../hooks/useApi";
 
+// Format a SQLite UTC datetime string ("YYYY-MM-DD HH:MM:SS") for display
+const formatTimestamp = (utcStr) => {
+  if (!utcStr) return "";
+  const d = new Date(utcStr.replace(" ", "T") + "Z");
+  return d.toLocaleString(undefined, {
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit",
+  });
+};
+
 const today = () => {
   const d = new Date();
   return `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
@@ -248,6 +258,24 @@ export default function AddJobModal({ show, onHide, onAdd, onSave, initialData, 
                 )}
               </Form.Group>
             </Col>
+            {isEditing && initialData?.updated_at && (
+              <Col sm={8}>
+                <Form.Group>
+                  <Form.Label>
+                    Last Updated
+                    {initialData.updated_at !== initialData.created_at && (
+                      <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 600, color: "#1a73e8" }}>edited</span>
+                    )}
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formatTimestamp(initialData.updated_at)}
+                    readOnly
+                    style={{ fontSize: 13 }}
+                  />
+                </Form.Group>
+              </Col>
+            )}
           </Row>
 
           <Row className="mb-3">

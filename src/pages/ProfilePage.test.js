@@ -53,6 +53,16 @@ describe("ProfilePage — panels", () => {
     expect(screen.getByText("Password")).toBeInTheDocument();
   });
 
+  test("GitHub Profile field is rendered", () => {
+    renderProfilePage();
+    expect(screen.getByPlaceholderText(/github\.com\/yourname/i)).toBeInTheDocument();
+  });
+
+  test("GitHub Profile input is pre-filled from user.github_url", () => {
+    renderProfilePage({ ...baseUser, github_url: "https://github.com/janesmith" });
+    expect(screen.getByPlaceholderText(/github\.com\/yourname/i)).toHaveValue("https://github.com/janesmith");
+  });
+
   test("display name input is pre-filled from user.display_name", () => {
     renderProfilePage();
     expect(screen.getByPlaceholderText(/your name/i)).toHaveValue("Jane Smith");

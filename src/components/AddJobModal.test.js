@@ -25,6 +25,8 @@ const editInitialData = {
   Role: "Engineer",
   Company: "Acme",
   Status: "Applied",
+  created_at: "2025-01-15 10:00:00",
+  updated_at: "2025-01-15 10:00:00",
 };
 
 function renderModal(overrides = {}) {
@@ -133,5 +135,34 @@ describe("AddJobModal — form submission", () => {
     expect(
       screen.getByRole("button", { name: /save changes/i })
     ).toBeInTheDocument();
+  });
+});
+
+// ── last updated field ────────────────────────────────────────────────────────
+
+describe("AddJobModal — last updated field", () => {
+  test("Last Updated field is shown in edit mode when updated_at is set", () => {
+    renderModal({ initialData: editInitialData });
+    expect(screen.getByText(/last updated/i)).toBeInTheDocument();
+  });
+
+  test("Last Updated field is not shown in add mode", () => {
+    renderModal();
+    expect(screen.queryByText(/last updated/i)).not.toBeInTheDocument();
+  });
+
+  test("'edited' badge not shown when updated_at equals created_at", () => {
+    renderModal({ initialData: editInitialData });
+    expect(screen.queryByText("edited")).not.toBeInTheDocument();
+  });
+
+  test("'edited' badge shown when updated_at differs from created_at", () => {
+    renderModal({
+      initialData: {
+        ...editInitialData,
+        updated_at: "2025-03-01 09:30:00",
+      },
+    });
+    expect(screen.getByText("edited")).toBeInTheDocument();
   });
 });

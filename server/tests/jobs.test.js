@@ -195,3 +195,25 @@ describe("DELETE /api/jobs/:id", () => {
     expect(res.status).toBe(401);
   });
 });
+
+// ── timestamps ────────────────────────────────────────────────────────────────
+
+describe("job timestamps", () => {
+  test("created job response includes created_at and updated_at", async () => {
+    const { body } = await addJob(user);
+    expect(body.created_at).toBeTruthy();
+    expect(body.updated_at).toBeTruthy();
+  });
+
+  test("updated_at changes after PUT, created_at stays the same", async () => {
+    const { body: created } = await addJob(user);
+    // Wait 1 second so updated_at will differ from created_at
+    await new Promise(r => setTimeout(r, 1100));
+    const { body: updated } = await request(app)
+      .put(`/api/jobs/${created.id}`)
+      .set(authHeader(user))
+      .send({ Company: "Updated Co" });
+    expect(updated.created_at).toBe(created.created_at);
+    expect(updated.updated_at).not.toBe(created.updated_at);
+  });
+});

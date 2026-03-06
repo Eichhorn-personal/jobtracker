@@ -131,6 +131,24 @@ describe("Header — profile quick-links", () => {
     expect(screen.queryByRole("link", { name: /my linkedin/i })).not.toBeInTheDocument();
   });
 
+  test("user with github_url sees My GitHub link in DOM", () => {
+    renderHeader({ id: 1, username: "u@example.com", role: "user", github_url: "https://github.com/user" });
+    expect(screen.getAllByRole("link", { name: /my github/i }).length).toBeGreaterThanOrEqual(1);
+  });
+
+  test("user without github_url does not see My GitHub", () => {
+    renderHeader({ id: 1, username: "u@example.com", role: "user" });
+    expect(screen.queryByRole("link", { name: /my github/i })).not.toBeInTheDocument();
+  });
+
+  test("dropdown contains My GitHub item when user has github_url", async () => {
+    renderHeader({ id: 1, username: "u@example.com", role: "user", github_url: "https://github.com/user" });
+    userEvent.click(screen.getByLabelText(/account menu for u@example\.com/i));
+    await waitFor(() =>
+      expect(screen.getAllByRole("link", { name: /my github/i }).length).toBeGreaterThanOrEqual(2)
+    );
+  });
+
   test("dropdown contains My Resume item when user has resume_link", async () => {
     renderHeader({ id: 1, username: "u@example.com", role: "user", resume_link: "https://example.com/resume" });
     userEvent.click(screen.getByLabelText(/account menu for u@example\.com/i));

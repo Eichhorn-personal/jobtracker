@@ -246,7 +246,7 @@ router.get("/me", authenticate, (req, res) => {
 
 // PUT /api/auth/profile
 router.put("/profile", authenticate, async (req, res) => {
-  const { display_name, photo, resume_link, linkedin_url, current_password, new_password, google_picture_url } = req.body;
+  const { display_name, photo, resume_link, linkedin_url, github_url, current_password, new_password, google_picture_url } = req.body;
 
   // Validate direct photo upload
   if (photo !== undefined && photo !== null) {
@@ -292,6 +292,16 @@ router.put("/profile", authenticate, async (req, res) => {
     }
   }
 
+  // Validate github_url if provided
+  if (github_url !== undefined && github_url !== null && github_url !== "") {
+    if (typeof github_url !== "string" || github_url.length > 2000) {
+      return res.status(400).json({ error: "GitHub URL must be 2000 characters or fewer" });
+    }
+    if (!/^https?:\/\//i.test(github_url)) {
+      return res.status(400).json({ error: "GitHub URL must start with http:// or https://" });
+    }
+  }
+
   // Validate new_password if provided
   if (new_password !== undefined) {
     if (typeof new_password !== "string" || new_password.length < 8 || new_password.length > 128) {
@@ -334,6 +344,10 @@ router.put("/profile", authenticate, async (req, res) => {
   if (linkedin_url !== undefined) {
     updates.push("linkedin_url = ?");
     params.push(linkedin_url || null);
+  }
+  if (github_url !== undefined) {
+    updates.push("github_url = ?");
+    params.push(github_url || null);
   }
   if (photo !== undefined) {
     updates.push("photo = ?");

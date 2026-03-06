@@ -53,6 +53,8 @@ function rowToFrontend(row) {
       obj[feField] = row[dbCol] ?? "";
     }
   }
+  obj.created_at = row.created_at ?? null;
+  obj.updated_at = row.updated_at ?? null;
   return obj;
 }
 
