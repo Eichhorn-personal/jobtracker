@@ -1,7 +1,7 @@
 const db = require("./database");
+const { isAdminEmail } = require("../utils/adminEmails");
 
 function serializeUser(u) {
-  const adminEmail = process.env.ADMIN_EMAIL;
   return {
     id: u.id,
     username: u.username,
@@ -12,7 +12,7 @@ function serializeUser(u) {
     linkedin_url: u.linkedin_url || null,
     github_url: u.github_url || null,
     has_password: !!(u.password),
-    is_site_admin: !!(adminEmail && u.username.toLowerCase() === adminEmail.toLowerCase()),
+    is_site_admin: isAdminEmail(u.username),
   };
 }
 

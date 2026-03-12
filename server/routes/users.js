@@ -5,7 +5,7 @@ const { log } = require("../logger");
 
 const router = express.Router();
 router.use(authenticate);
-router.use(require("../middleware/requireAdmin"));
+router.use(require("../middleware/requireSiteAdmin"));
 
 // GET /api/users
 router.get("/", (req, res) => {

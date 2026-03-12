@@ -5,7 +5,7 @@ const authenticate = require("../middleware/authenticate");
 
 const router = express.Router();
 router.use(authenticate);
-router.use(require("../middleware/requireAdmin"));
+router.use(require("../middleware/requireSiteAdmin"));
 
 const logPath = process.env.LOG_PATH || path.join(__dirname, "..", "app.log");
 

@@ -94,7 +94,7 @@ router.post("/register", async (req, res) => {
   try {
     const stmt = db.prepare("INSERT INTO users (username, password) VALUES (?, ?)");
     const result = stmt.run(username, hash);
-    log("USER_CREATED", { id: result.lastInsertRowid, email: username, source: "password" });
+    log("USER_CREATED", { id: result.lastInsertRowid, email: username, source: "password", role: "user" });
     createSampleJob(result.lastInsertRowid);
     return res.status(201).json({ id: result.lastInsertRowid, username });
   } catch (err) {
@@ -190,9 +190,8 @@ router.post("/google", async (req, res) => {
     }
 
     // 3. Brand-new user — INSERT OR IGNORE handles the rare simultaneous-login race
-    const role = process.env.ADMIN_EMAIL && email.toLowerCase() === process.env.ADMIN_EMAIL.toLowerCase()
-      ? "admin"
-      : "user";
+    const { isAdminEmail } = require("../utils/adminEmails");
+    const role = isAdminEmail(email) ? "admin" : "user";
     const result = db
       .prepare("INSERT OR IGNORE INTO users (username, password, google_id, role) VALUES (?, ?, ?, ?)")
       .run(email.toLowerCase(), "", googleId, role);
@@ -213,7 +212,7 @@ router.post("/google", async (req, res) => {
   if (!user) return res.status(500).json({ error: "Failed to sign in with Google" });
 
   if (wasCreated) {
-    log("USER_CREATED", { id: user.id, email, source: "google" });
+    log("USER_CREATED", { id: user.id, email, source: "google", role: user.role });
     createSampleJob(user.id);
   }
   if (wasLinked)  log("GOOGLE_ACCOUNT_LINKED", { id: user.id, email });

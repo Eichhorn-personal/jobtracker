@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
@@ -11,6 +11,25 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+  // Refresh user data from server on app load to pick up role/profile changes
+  // made by an admin while this user was already logged in.
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+    const base = process.env.REACT_APP_API_URL || "";
+    fetch(`${base}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((userData) => {
+        if (userData) {
+          localStorage.setItem("authUser", JSON.stringify(userData));
+          setUser(userData);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const login = (token, userData, googlePicture = null) => {
     localStorage.setItem("authToken", token);

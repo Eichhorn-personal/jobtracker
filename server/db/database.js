@@ -113,10 +113,12 @@ if (!dropCols.includes("color")) {
   db.exec("ALTER TABLE dropdown_options ADD COLUMN color TEXT");
 }
 
-// Always ensure designated admin has admin role (handles fresh DBs where user didn't exist at migration time)
-const adminEmail = process.env.ADMIN_EMAIL;
-if (adminEmail) {
-  db.prepare("UPDATE users SET role = 'admin' WHERE username = ?").run(adminEmail);
+// Always ensure designated site admins have admin role (handles fresh DBs where user didn't exist at migration time)
+const { getAdminEmails } = require("../utils/adminEmails");
+const adminEmails = getAdminEmails();
+if (adminEmails.length) {
+  const placeholders = adminEmails.map(() => "?").join(", ");
+  db.prepare(`UPDATE users SET role = 'admin' WHERE username IN (${placeholders})`).run(...adminEmails);
 }
 
 module.exports = db;

@@ -83,11 +83,11 @@ export default function App() {
         <Route
           path="/logs"
           element={
-            <AdminRoute>
+            <SiteAdminRoute>
               <PageLayout>
                 <LogsPage />
               </PageLayout>
-            </AdminRoute>
+            </SiteAdminRoute>
           }
         />
         <Route

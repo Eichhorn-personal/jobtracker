@@ -67,7 +67,7 @@ describe("AdminRoute /admin", () => {
 
 // ── /logs route guard ─────────────────────────────────────────────────────────
 
-describe("AdminRoute /logs", () => {
+describe("SiteAdminRoute /logs", () => {
   test("unauthenticated user is redirected to /login", () => {
     renderApp("/logs");
     expect(
@@ -82,8 +82,14 @@ describe("AdminRoute /logs", () => {
     expect(screen.queryByTestId("logs-page")).not.toBeInTheDocument();
   });
 
-  test("admin sees LogsPage", () => {
+  test("admin role without is_site_admin is redirected to /", () => {
     renderApp("/logs", adminUser);
+    expect(screen.getByTestId("data-table")).toBeInTheDocument();
+    expect(screen.queryByTestId("logs-page")).not.toBeInTheDocument();
+  });
+
+  test("site admin sees LogsPage", () => {
+    renderApp("/logs", siteAdminUser);
     expect(screen.getByTestId("logs-page")).toBeInTheDocument();
   });
 });
