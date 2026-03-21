@@ -56,6 +56,9 @@ export default function LogsPage() {
   const [filterEvents, setFilterEvents] = useState(new Set(EVENT_TYPES));
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef(null);
+  // Tracks every event type seen so far; new types get auto-selected, but
+  // types the user has unchecked won't be re-added on refresh.
+  const seenTypesRef = useRef(new Set(EVENT_TYPES));
   const [searchTerm, setSearchTerm] = useState("");
   const [sortDir, setSortDir] = useState("desc");
 
@@ -79,15 +82,30 @@ export default function LogsPage() {
     });
   };
 
-  const allSelected = filterEvents.size === EVENT_TYPES.length;
+  const allEventTypes = entries
+    ? [...new Set(entries.map(e => e.event))].sort()
+    : [...seenTypesRef.current].sort();
+  const allSelected = allEventTypes.length > 0 && allEventTypes.every(t => filterEvents.has(t));
   const filterLabel = allSelected
     ? "All events"
-    : `${filterEvents.size} of ${EVENT_TYPES.length}`;
+    : `${allEventTypes.filter(t => filterEvents.has(t)).length} of ${allEventTypes.length}`;
 
   const load = useCallback(() => {
     request("/api/logs")
       .then(res => res.json())
-      .then(setEntries)
+      .then(data => {
+        setEntries(data);
+        // Auto-select any event types not seen before (preserves user's unchecked state).
+        const newTypes = data.map(e => e.event).filter(t => !seenTypesRef.current.has(t));
+        if (newTypes.length > 0) {
+          newTypes.forEach(t => seenTypesRef.current.add(t));
+          setFilterEvents(prev => {
+            const next = new Set(prev);
+            newTypes.forEach(t => next.add(t));
+            return next;
+          });
+        }
+      })
       .catch(console.error);
   }, [request]);
 
@@ -156,14 +174,14 @@ export default function LogsPage() {
           </button>
           {filterOpen && (
             <div className="log-filter-menu">
-              {EVENT_TYPES.map(evt => (
+              {allEventTypes.map(evt => (
                 <label key={evt} className="log-filter-item">
                   <input
                     type="checkbox"
                     checked={filterEvents.has(evt)}
                     onChange={() => toggleEvent(evt)}
                   />
-                  <span className={`status-chip ${EVENT_CHIP[evt]}`} style={{ fontSize: 11 }}>{evt}</span>
+                  <span className={`status-chip ${EVENT_CHIP[evt] || "event-secondary"}`} style={{ fontSize: 11 }}>{evt}</span>
                 </label>
               ))}
               {!allSelected && (
@@ -171,7 +189,11 @@ export default function LogsPage() {
                   <div className="log-filter-divider" />
                   <button
                     className="log-filter-clear"
-                    onClick={() => setFilterEvents(new Set(EVENT_TYPES))}
+                    onClick={() => setFilterEvents(prev => {
+                      const next = new Set(prev);
+                      allEventTypes.forEach(t => next.add(t));
+                      return next;
+                    })}
                   >
                     Select all
                   </button>
